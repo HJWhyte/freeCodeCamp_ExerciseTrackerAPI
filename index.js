@@ -20,11 +20,12 @@ app.get('/', (req, res) => {
 
 app.post('/api/users', function(req,res) {
   console.log(req.body);
-  let username = req.body.username;
-  let resObj = { username : username,
+  let username = req.body.username;     // Get the username data from the necessary form
+  let resObj = { username : username,   // Create user response object
                  _id : uuid.v4()
   }
   console.log(resObj)
+  res.json(resObj)
 })
 
 
