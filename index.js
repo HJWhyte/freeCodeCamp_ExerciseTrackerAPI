@@ -6,6 +6,8 @@ require('dotenv').config()
 let mongoose = require('mongoose'); // Import mongoose requirement for DB
 mongoose.connect(process.env['MONGO_URI'], { useNewUrlParser: true, useUnifiedTopology : true});  // Connect to database
 
+const bodyParser = require('body-parser'); // Import response body parsing middleware
+app.use(bodyParser.urlencoded({extended: false}));  // use body parser middleware for url encoded info
 
 app.use(cors())
 app.use(express.static('public'))
