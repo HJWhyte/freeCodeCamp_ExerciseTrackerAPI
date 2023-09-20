@@ -38,7 +38,11 @@ app.post('/api/users', function(req,res) {
   newUser.save();
 })
 
-
+app.get('/api/users', function(req, res) {
+  userModel.find({}).then((users) => {           // Find all user models
+    res.json(users)
+  })
+});
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
