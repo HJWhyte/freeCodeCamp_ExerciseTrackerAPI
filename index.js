@@ -53,11 +53,17 @@ app.get('/api/users', function(req, res) {
   })
 });
 
-app.post('api/users/:_id/exercises', function(req,res) {
+app.post('/api/users/:_id/exercises', async function(req, res) {
   console.log(req.body)
-  let desc = req.body.description
-  let duration = req.body.duration
-
+  let exObj = {
+    _id : req.params._id,
+    description : req.body.description,
+    duration : req.body.duration,
+  }
+  if (req.body.date != '') {
+    exObj.date = req.body.date
+  }
+  console.log(exObj);
 })
 
 
