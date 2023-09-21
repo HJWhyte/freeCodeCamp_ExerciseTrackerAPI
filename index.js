@@ -54,6 +54,14 @@ app.get('/api/users', function(req, res) {
 
 app.post('/api/users/:_id/exercises', async function(req, res) {
   
+  let limit = req.query.limit;
+  let from = req.query.from;
+  let to = req.query.to;
+
+  
+
+
+
   let exObj = {                            // Create exercise obj with request parameters/body
     userId : req.params._id,
     description : req.body.description,
@@ -92,10 +100,10 @@ app.get('/api/users/:id/logs', async function(req, res) {
     console.log('Exercises:', exercises)
     let count = exercises.length
     console.log('Count:', count)
-    const exerciseInfoArray = exercises.map(exercise => ({
-      description: exercise.description,
-      date: exercise.date.toDateString(),
-      duration: exercise.duration
+    const exerciseInfoArray = exercises.map(x => ({
+      description: x.description,
+      date: x.date.toDateString(),
+      duration: x.duration
     }));
     res.json ({
       username: userFound.username,
