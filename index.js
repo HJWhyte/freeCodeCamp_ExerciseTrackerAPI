@@ -92,15 +92,16 @@ app.get('/api/users/:id/logs', async function(req, res) {
     console.log('Exercises:', exercises)
     let count = exercises.length
     console.log('Count:', count)
+    const exerciseInfoArray = exercises.map(exercise => ({
+      description: exercise.description,
+      date: exercise.date,
+      duration: exercise.duration
+    }));
     res.json ({
       username: userFound.username,
       count: count,
       _id : req.params.id,
-      // log: [{
-      //   description: exercises.description,
-      //   duration: exercises.duration,
-      //   date: exercises.date
-      // }]
+      log: [exerciseInfoArray]
     })
   } 
   catch (err) {
