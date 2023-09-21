@@ -64,6 +64,22 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
     exObj.date = req.body.date
   }
   console.log(exObj);
+  let newEx = new exModel(exObj);
+  try {
+  let userFound = await userModel.findById({_id: req.params._id})
+    console.log(userFound)
+    newEx.save()
+    res.json({
+      _id : userFound._id,
+      username : userFound.username,
+      description : newEx.description,
+      duration : newEx.duration,
+      date : newEx.date.toDateString()
+    })
+  }
+  catch (err) {
+  console.log(err);
+  }
 })
 
 
