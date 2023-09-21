@@ -14,10 +14,9 @@ const userSchema = new mongoose.Schema({          // Define User Schema
 let userModel = mongoose.model('users', userSchema); // Create DB model from schema 
 
 const exSchema = new mongoose.Schema({
-  username : {type: String, required: true, unique: true},
   description : {type: String, required: true, unique: true},
   duration : {type: Number, required: true, unique: true},
-  date : {type: Date, required: true, unique: true},
+  date : {type: Date, default: new Date()},
   _id : {type: String}
 });
 
@@ -63,6 +62,7 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
   if (req.body.date != '') {
     exObj.date = req.body.date
   }
+  
   console.log(exObj);
   let newEx = new exModel(exObj);
   try {
