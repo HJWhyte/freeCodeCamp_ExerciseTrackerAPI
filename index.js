@@ -89,8 +89,8 @@ app.get('/api/users/:id/logs', async function(req, res) {
   let userId = req.params.id
 
   let limit = req.query.limit;
-  let from = req.query.from;
-  let to = req.query.to;
+  let fromParam = req.query.from;
+  let toParam = req.query.to;
 
   limit = limit ? parseInt(limit): limit;
 
@@ -98,20 +98,20 @@ app.get('/api/users/:id/logs', async function(req, res) {
       userId : userId
   };
 
-  if (from || to){
+  if (fromParam || toParam){
     queryObj.date = {};
-    if (from){
-      queryObj.userId.date['$gte'] = from
+    if (fromParam) {
+      queryObj.date['$gte'] = fromParam
     }
-    if (to){
-      queryObj.userId.date['$lte'] = to
+    if (toParam) {
+      queryObj.date['$lte'] = toParam
     }
   }
 
   try {
     let userFound = await userModel.findById(userId)
     console.log('UserFound:', userFound)
-    let exercises = await exModel.find({userId: req.params.id})
+    let exercises = await exModel.find(queryObj).limit(limit);
     console.log('Exercises:', exercises)
     let count = exercises.length
     console.log('Count:', count)
