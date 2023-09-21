@@ -14,10 +14,10 @@ const userSchema = new mongoose.Schema({          // Define User Schema
 let userModel = mongoose.model('users', userSchema); // Create DB model from schema 
 
 const exSchema = new mongoose.Schema({
-  description : {type: String, required: true, unique: true},
-  duration : {type: Number, required: true, unique: true},
-  date : {type: Date, default: new Date()},
-  _id : {type: String}
+  userId : {type: String, required: true},
+  description : {type: String, required: true},
+  duration : {type: Number, required: true},
+  date : {type: Date, default: new Date()}
 });
 
 let exModel = mongoose.model('exercises', exSchema);
@@ -37,12 +37,12 @@ app.get('/', (req, res) => {
 app.post('/api/users', function(req,res) {
   console.log(req.body);
   let username = req.body.username;
-  let resObj = { username : username,
+  let resObj = { username : username,     // Create a response obj based off request username and random ID
                  _id : uuid.v4()
   }
   console.log(resObj);
   res.json(resObj);
-  let newUser = new userModel(resObj);
+  let newUser = new userModel(resObj);             // Create a user model and save to DB
   newUser.save();
 })
 
@@ -53,23 +53,24 @@ app.get('/api/users', function(req, res) {
 });
 
 app.post('/api/users/:_id/exercises', async function(req, res) {
-  console.log(req.body)
-  let exObj = {
-    _id : req.params._id,
+  
+  let exObj = {                            // Create exercise obj with request parameters/body
+    userId : req.params._id,
     description : req.body.description,
     duration : req.body.duration,
   }
-  if (req.body.date != '') {
+  if (req.body.date != '') {            // Check if the date is blank (set to default) or sets value from request body
     exObj.date = req.body.date
   }
-  
   console.log(exObj);
-  let newEx = new exModel(exObj);
+  
+  let newEx = new exModel(exObj);    // Creates exercise model
+  
   try {
-  let userFound = await userModel.findById({_id: req.params._id})
+  let userFound = await userModel.findById(req.params._id)        // Searches for user with same ID as req ID
     console.log(userFound)
-    newEx.save()
-    res.json({
+    newEx.save()                                                       // If found save exercise model
+    res.json({                                               // and create response json    
       _id : userFound._id,
       username : userFound.username,
       description : newEx.description,
@@ -77,6 +78,31 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
       date : newEx.date.toDateString()
     })
   }
+  catch (err) {
+  console.log(err);
+  }
+})
+
+app.get('/api/users/:id/logs', async function(req, res) {
+  console.log('Req Params:', req.params)
+  try {
+    let userFound = await userModel.findById(req.params.id)
+    console.log('UserFound:', userFound)
+    let exercises = await exModel.find({userId: req.params.id})
+    console.log('Exercises:', exercises)
+    let count = exercises.length
+    console.log('Count:', count)
+    res.json ({
+      username: userFound.username,
+      count: count,
+      _id : req.params.id,
+      // log: [{
+      //   description: exercises.description,
+      //   duration: exercises.duration,
+      //   date: exercises.date
+      // }]
+    })
+  } 
   catch (err) {
   console.log(err);
   }
