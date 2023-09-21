@@ -13,6 +13,15 @@ const userSchema = new mongoose.Schema({          // Define User Schema
 
 let userModel = mongoose.model('users', userSchema); // Create DB model from schema 
 
+const exSchema = new mongoose.Schema({
+  username : {type: String, required: true, unique: true},
+  description : {type: String, required: true, unique: true},
+  duration : {type: Number, required: true, unique: true},
+  date : {type: Date, required: true, unique: true},
+  _id : {type: String}
+});
+
+let exModel = mongoose.model('exercises', exSchema);
 
 const bodyParser = require('body-parser'); // Import response body parsing middleware
 app.use(bodyParser.urlencoded({extended: false}));  // use body parser middleware for url encoded info
@@ -43,6 +52,14 @@ app.get('/api/users', function(req, res) {
     res.json(users)
   })
 });
+
+app.post('api/users/:_id/exercises', function(req,res) {
+  console.log(req.body)
+  let desc = req.body.description
+  let duration = req.body.duration
+
+})
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
