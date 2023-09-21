@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema({          // Define User Schema
 
 let userModel = mongoose.model('users', userSchema); // Create DB model from schema 
 
+const exSchema = new mongoose.Schema({
+  description : {type: String, required: true, unique: true},
+  duration : {type: Number, required: true, unique: true},
+  date : {type: Date, default: new Date()},
+  _id : {type: String}
+});
+
+let exModel = mongoose.model('exercises', exSchema);
 
 const bodyParser = require('body-parser'); // Import response body parsing middleware
 app.use(bodyParser.urlencoded({extended: false}));  // use body parser middleware for url encoded info
@@ -43,6 +51,37 @@ app.get('/api/users', function(req, res) {
     res.json(users)
   })
 });
+
+app.post('/api/users/:_id/exercises', async function(req, res) {
+  console.log(req.body)
+  let exObj = {
+    _id : req.params._id,
+    description : req.body.description,
+    duration : req.body.duration,
+  }
+  if (req.body.date != '') {
+    exObj.date = req.body.date
+  }
+  
+  console.log(exObj);
+  let newEx = new exModel(exObj);
+  try {
+  let userFound = await userModel.findById({_id: req.params._id})
+    console.log(userFound)
+    newEx.save()
+    res.json({
+      _id : userFound._id,
+      username : userFound.username,
+      description : newEx.description,
+      duration : newEx.duration,
+      date : newEx.date.toDateString()
+    })
+  }
+  catch (err) {
+  console.log(err);
+  }
+})
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
