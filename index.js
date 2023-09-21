@@ -53,14 +53,6 @@ app.get('/api/users', function(req, res) {
 });
 
 app.post('/api/users/:_id/exercises', async function(req, res) {
-  
-  let limit = req.query.limit;
-  let from = req.query.from;
-  let to = req.query.to;
-
-  
-
-
 
   let exObj = {                            // Create exercise obj with request parameters/body
     userId : req.params._id,
@@ -92,9 +84,32 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
 })
 
 app.get('/api/users/:id/logs', async function(req, res) {
+
   console.log('Req Params:', req.params)
+  let userId = req.params.id
+
+  let limit = req.query.limit;
+  let from = req.query.from;
+  let to = req.query.to;
+
+  limit = limit ? parseInt(limit): limit;
+
+  let queryObj = {
+      userId : userId
+  };
+
+  if (from || to){
+    queryObj.date = {};
+    if (from){
+      queryObj.userId.date['$gte'] = from
+    }
+    if (to){
+      queryObj.userId.date['$lte'] = to
+    }
+  }
+
   try {
-    let userFound = await userModel.findById(req.params.id)
+    let userFound = await userModel.findById(userId)
     console.log('UserFound:', userFound)
     let exercises = await exModel.find({userId: req.params.id})
     console.log('Exercises:', exercises)
