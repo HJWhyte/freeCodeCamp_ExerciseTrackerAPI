@@ -53,7 +53,7 @@ app.get('/api/users', function(req, res) {
 });
 
 app.post('/api/users/:_id/exercises', async function(req, res) {
-  
+
   let exObj = {                            // Create exercise obj with request parameters/body
     userId : req.params._id,
     description : req.body.description,
@@ -84,18 +84,41 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
 })
 
 app.get('/api/users/:id/logs', async function(req, res) {
+
   console.log('Req Params:', req.params)
+  let userId = req.params.id
+
+  let limit = req.query.limit;
+  let fromParam = req.query.from;
+  let toParam = req.query.to;
+
+  limit = limit ? parseInt(limit): limit;
+
+  let queryObj = {
+      userId : userId
+  };
+
+  if (fromParam || toParam){
+    queryObj.date = {};
+    if (fromParam) {
+      queryObj.date['$gte'] = fromParam
+    }
+    if (toParam) {
+      queryObj.date['$lte'] = toParam
+    }
+  }
+
   try {
-    let userFound = await userModel.findById(req.params.id)
+    let userFound = await userModel.findById(userId)
     console.log('UserFound:', userFound)
-    let exercises = await exModel.find({userId: req.params.id})
+    let exercises = await exModel.find(queryObj).limit(limit);
     console.log('Exercises:', exercises)
     let count = exercises.length
     console.log('Count:', count)
-    const exerciseInfoArray = exercises.map(exercise => ({
-      description: exercise.description,
-      date: exercise.date.toDateString(),
-      duration: exercise.duration
+    const exerciseInfoArray = exercises.map(x => ({
+      description: x.description,
+      date: x.date.toDateString(),
+      duration: x.duration
     }));
     res.json ({
       username: userFound.username,
